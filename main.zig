@@ -44,10 +44,6 @@ const SiteGenerator = struct {
             \\    <link rel="icon" type="image/x-icon" href="{{root_path}}favicon.png">
             \\    <title>{{title}}</title>
             \\    <meta name="color-scheme" content="light dark">
-            \\<!--
-            \\    <link rel="stylesheet" href="{{root_path}}pico.min.css">
-            \\    <link rel="stylesheet" href="{{root_path}}pico.colors.min.css">
-            \\-->
             \\    <link rel="stylesheet" href="{{root_path}}ilioCSS.min.css">
             \\    <link rel="stylesheet" href="{{root_path}}style.css">
             \\   
@@ -70,8 +66,8 @@ const SiteGenerator = struct {
             \\    </main>
             \\    <footer class="container">
             \\         <nav>
-            \\           <p>&copy 2025 <span><a href="{{root_path}}about.html" data-tooltip="That's me!">ilios</a></p>
-            \\          <p>No tracking, minimal JS</p>
+            \\           <p>&copy 2026 <span><a href="{{root_path}}about.html" data-tooltip="That's me!">ilios</a></p>
+            \\           <span><span class="love" data-tooltip="Only pure HTML/CSS">Made</span> <span class="love" data-placement="left" data-tooltip="No Javascript">with</span> <span class="love" data-placement="left" data-tooltip="No tracking"><img src="heart.svg" class="icon" alt="Love"/></span></span>
             \\         </nav>
             \\    </footer>
             \\</body>
@@ -542,63 +538,46 @@ const SiteGenerator = struct {
         });
         defer self.allocator.free(style_path);
 
-        // Check if file exists, only create if it doesn't
-        fs.cwd().access(style_path, .{}) catch |err| {
-            if (err == error.FileNotFound) {
-                const default_css =
-                    \\* {
-                    \\  /* Dracula Color Palette as CSS Variables */
-                    \\  --dracula-background: #282a36;
-                    \\  --dracula-foreground: #f8f8f2;
-                    \\  --dracula-selection: #44475a;
-                    \\  --dracula-comment: #6272a4;
-                    \\  --dracula-cyan: #8be9fd;
-                    \\  --dracula-green: #50fa7b;
-                    \\  --dracula-pink: #ff79c6;
-                    \\  --dracula-purple: #bd93f9;
-                    \\}
-                    \\.smooth {
-                    \\  transition: all 1s ease-in;
-                    \\}
-                    \\.logo {
-                    \\  height:2.5em;
-                    \\}
-                    \\.icon {
-                    \\  height:1em;
-                    \\}
-                    \\.love {
-                    \\  text-decoration:none !important;
-                    \\  border-bottom:none !important;
-                    \\  cursor:pointer !important;
-                    \\}
-                    \\ /*
-                    \\body > footer .container ul {
-                    \\  display: grid;
-                    \\}
-                    \\body > footer .container ul li {
-                    \\  padding:0;
-                    \\}
-                    \\body > main img {
-                    \\  display: block;
-                    \\  margin-left: auto;
-                    \\  margin-right: auto;
-                    \\}
-                    \\nav { 
-                    \\  align-items:center;
-                    \\}
-                    \\article { 
-                    \\}
-                    \\ */
-                ;
+        // Always regenerate from hardcoded source
+        const default_css =
+            \\* {
+            \\  /* Dracula Color Palette as CSS Variables */
+            \\  --dracula-background: #282a36;
+            \\  --dracula-foreground: #f8f8f2;
+            \\  --dracula-selection: #44475a;
+            \\  --dracula-comment: #6272a4;
+            \\  --dracula-cyan: #8be9fd;
+            \\  --dracula-green: #50fa7b;
+            \\  --dracula-pink: #ff79c6;
+            \\  --dracula-purple: #bd93f9;
+            \\}
+            \\.smooth {
+            \\  transition: all 1s ease-in;
+            \\}
+            \\.logo {
+            \\  height:2.5em;
+            \\}
+            \\.icon {
+            \\height:1em;
+            \\display:inline;
+            \\margin:0;
+            \\}
+            \\.love {
+            \\text-decoration:none !important;
+            \\border-bottom:none !important;
+            \\cursor:pointer !important;
+            \\}
+            \\footer > section > nav {
+            \\align-items: center;
+            \\display: flex;
+            \\justify-content: space-between;
+            \\}
+        ;
 
-                var file = try fs.cwd().createFile(style_path, .{});
-                defer file.close();
-                _ = try file.writeAll(default_css);
-                std.debug.print("Created default style.css\n", .{});
-            } else {
-                return err;
-            }
-        };
+        var file = try fs.cwd().createFile(style_path, .{});
+        defer file.close();
+        _ = try file.writeAll(default_css);
+        std.debug.print("Generated style.css\n", .{});
     }
 
     /// Scan the directory for markdown files and process them
@@ -761,12 +740,7 @@ const SiteGenerator = struct {
 
     /// Deletes and recreates stylesheet, index, sitemap, and posts.
     pub fn generateSite(self: *SiteGenerator) !void {
-        // Delete and recreate stylesheet
-        const style_path = try fs.path.join(self.allocator, &[_][]const u8{
-            self.dir_path, "style.css",
-        });
-        defer self.allocator.free(style_path);
-        try deleteHtmlFile(style_path);
+        // Always regenerate stylesheet from hardcoded source
         try self.createDefaultStylesheet();
 
         // Delete and recreate index and posts files

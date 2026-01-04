@@ -4,4 +4,5 @@
 /site/posts/*.htm
 /site/posts/*.orig.jpg
 /site/posts/*.orig.png
+/site/style.css
 result
