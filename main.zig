@@ -64,7 +64,7 @@ const SiteGenerator = struct {
             \\        {{content}}
             \\      </article>
             \\    </main>
-            \\    <footer class="container" style="margin: 0.5em 0 0 0;!important">
+            \\    <footer class="container">
             \\         <nav>
             \\           <p>&copy 2026 <span><a href="{{root_path}}about.html" data-tooltip="That's me!">ilios</a></p>
             \\           <span><span class="love" data-tooltip="Only pure HTML/CSS">Made</span> <span class="love" data-placement="left" data-tooltip="No Javascript">with</span> <span class="love" data-placement="left" data-tooltip="No tracking"><img src="heart.svg" class="icon" alt="Love"/></span></span>
