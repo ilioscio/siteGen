@@ -1,3 +1,7 @@
 /zig-out/
 /.zig-cache/
+/site/posts/*.html
+/site/posts/*.htm
+/site/posts/*.orig.jpg
+/site/posts/*.orig.png
 result
