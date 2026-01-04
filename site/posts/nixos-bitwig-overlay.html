@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/x-icon" href="../favicon.png">
+    <title>How to install a specific version of Bitwig Studio under NixOS</title>
+    <meta name="color-scheme" content="light dark">
+<!--
+    <link rel="stylesheet" href="../pico.min.css">
+    <link rel="stylesheet" href="../pico.colors.min.css">
+-->
+    <link rel="stylesheet" href="../ilioCSS.min.css">
+    <link rel="stylesheet" href="../style.css">
+   
+</head>
+<body>
+    <header class="container">
+      <nav>
+          <a href="../index.html"><img src="../logo.svg" class="logo" alt="Logo"/></a>
+        <ul>
+          <li>
+            <a href="../posts.html"><button>Posts</button></a>
+          </li>
+        </ul>
+      </nav>
+    </header>
+    <main class="container">
+      <article>
+        <h1>How to install a specific version of Bitwig Studio under NixOS</h1>
+<p>If you use bitwig there's a good chance you don't continually buy the new version every time it comes out, that means that standard installation procedure is to log in via the bitwig website and then download the latest specific version that you own, that you then install on your machine.</p>
+<p>Well for NixOS this is obviously an anti-pattern, you could perhaps use flatpaks, but if you want to do things the declarative way, the <em>NixOS</em> way, then this information is for you.</p>
+<h2>What we're going to do (or just skip to instructions)</h2>
+<p>Nixpkgs is a collection of nix expressions for building and installing packages, bitwig-studio already has a nix expression for the (usually) latest version of bitwig, it works by downloading the .deb file provided by bitwig on their website and then building and linking the binary file, and then providing it to the users underlying system.</p>
+<p>We are going to use a feature of Nixpkgs called overlays to override the .deb file to the <em>specific version</em> that you own, leaving the rest of the build process alone.</p>
+<p>So we're going to write a bitwig-studio overlay nix expression that you can import into your configuration.nix</p>
+<h2>Instructions</h2>
+<p>Note: I'm using Firefox, if you are using Chrome the same steps apply but may have small variations.</p>
+<p>Log into your bitwig account at <a href="https://www.bitwig.com/account-profile/">bitwig.com</a></p>
+<p><img src="bitwig1.png" alt="Download"> <img src="" alt=""> Click the download button for Linux and select Ubuntu (this is important)</p>
+<p><img src="bitwig2.png" alt="Copy download link"> Stop the download and right click it and select "Copy download link"</p>
+<p>If you paste it, it should look something like this: <a href="https://downloads.bitwig.com/5.0.11/bitwig-studio-5.0.11.deb">https://downloads.bitwig.com/5.0.11/bitwig-studio-5.0.11.deb</a></p>
+<p>Save this URL.</p>
+<p>In fact, if the previous steps have given you trouble for some reason, you can probably just substitute your own version in the URL above and it'll probably work as long as bitwig doesn't change their website.</p>
+<p>Now we're going to write our overlay.</p>
+<p>Using your preferred editor, as root, create /etc/nixos/bitwig-overlay.nix and paste the following</p>
+<pre><code>{ config, lib, pkgs, ... }:
+{
+  nixpkgs.overlays = [
+    (final: prev: {
+      bitwig-studio = prev.bitwig-studio.overrideAttrs (oldAttrs: {
+        version = "5.0.11";
+        src = pkgs.fetchurl {
+          url = "https://downloads.bitwig.com/5.0.11/bitwig-studio-5.0.11.deb";
+          hash = "";
+        };
+        # Inherit the original package's meta information
+        meta = oldAttrs.meta;
+      });
+    })
+  ];
+}
+</code></pre>
+<p><em>Be sure to replace both version, and url with your own and save the file.</em></p>
+<p>Now the hash field <em>IS</em> required, but we are going to leave it blank for now because we want the nixos-rebuild command to give it to us in a moment, but first.</p>
+<p>As root, open your /etc/nixos/configuration.nix and add the following</p>
+<pre><code>{
+  imports = [
+    ./bitwig-overlay.nix
+  ];
+  environment.systemPackages = with pkgs; [
+    bitwig-studio
+  ];
+}
+</code></pre>
+<p>And then <em>TRY</em> to rebuild your system with a standard <code>sudo nixos-rebuild --switch</code></p>
+<p>Which will fail, but it will give you the <em>EXPECTED HASH</em> of the bitwig-overlay.nix saying something like the following</p>
+<pre><code>error: hash mismatch in fixed-output derivation '/nix/store/6mywmhdqc8cvvsg0q3p452nmm1nc9lv6-bitwig-studio-5.0.11.deb.drv':                                               
+specified: sha256-AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=dio-5.0.
+got:    sha256-c9bRWVWCC9hLxmko6EHgxgmghrxskJP4PQf3ld2BHoY=
+</code></pre>
+<p>Copy the hash contents listed after got:</p>
+<p>In my example it is <code>sha256-c9bRWVWCC9hLxmko6EHgxgmghrxskJP4PQf3ld2BHoY=</code></p>
+<p>And now as root replace the missing hash in /etc/nixos/bitwig-overlay.nix, in my example it now looks like this</p>
+<pre><code>{
+  nixpkgs.overlays = [
+    (final: prev: {
+      bitwig-studio = prev.bitwig-studio.overrideAttrs (oldAttrs: {
+        version = "5.0.11";
+        src = pkgs.fetchurl {
+          url = "https://downloads.bitwig.com/5.0.11/bitwig-studio-5.0.11.deb";
+          hash = "sha256-c9bRWVWCC9hLxmko6EHgxgmghrxskJP4PQf3ld2BHoY=";
+        };
+        # Inherit the original package's meta information
+        meta = oldAttrs.meta;
+      });
+    })
+  ];
+}
+</code></pre>
+<p>And finally rerun <code>nixos-rebuild --switch</code> and your system should download and build your specific version of bitwig, providing it to the underlying system. <img src="bitwig3.png" alt="Bitwig"></p>
+
+      </article>
+    </main>
+    <footer class="container">
+         <nav>
+           <p>&copy 2025 <span><a href="../about.html" data-tooltip="That's me!">ilios</a></p>
+          <p>No tracking, minimal JS</p>
+         </nav>
+    </footer>
+</body>
+</html>

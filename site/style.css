@@ -1,0 +1,43 @@
+* {
+  /* Dracula Color Palette as CSS Variables */
+  --dracula-background: #282a36;
+  --dracula-foreground: #f8f8f2;
+  --dracula-selection: #44475a;
+  --dracula-comment: #6272a4;
+  --dracula-cyan: #8be9fd;
+  --dracula-green: #50fa7b;
+  --dracula-pink: #ff79c6;
+  --dracula-purple: #bd93f9;
+}
+.smooth {
+  transition: all 1s ease-in;
+}
+.logo {
+  height:2.5em;
+}
+.icon {
+  height:1em;
+}
+.love {
+  text-decoration:none !important;
+  border-bottom:none !important;
+  cursor:pointer !important;
+}
+ /*
+body > footer .container ul {
+  display: grid;
+}
+body > footer .container ul li {
+  padding:0;
+}
+body > main img {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+}
+nav { 
+  align-items:center;
+}
+article { 
+}
+ */
