@@ -73,7 +73,7 @@
       #   environment.systemPackages = [ pkgs.siteGen ];
       overlays.default = final: prev:
         let
-          zig = zig-overlay.packages.${prev.system}."0.14.0";
+          zig = zig-overlay.packages.${prev.system}."0.15.2";
         in {
           siteGen = mkSiteGen final zig;
         };
