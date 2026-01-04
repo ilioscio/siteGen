@@ -551,6 +551,19 @@ const SiteGenerator = struct {
             \\  --dracula-pink: #ff79c6;
             \\  --dracula-purple: #bd93f9;
             \\}
+            \\html, body {
+            \\  overflow-x: hidden;
+            \\}
+            \\[data-tooltip] {
+            \\  position: relative;
+            \\}
+            \\[data-tooltip]::after {
+            \\  right: auto;
+            \\  left: 50%;
+            \\  transform: translateX(-50%);
+            \\  max-width: 90vw;
+            \\  white-space: nowrap;
+            \\}
             \\.smooth {
             \\  transition: all 1s ease-in;
             \\}
@@ -558,19 +571,19 @@ const SiteGenerator = struct {
             \\  height:2.5em;
             \\}
             \\.icon {
-            \\height:1em;
-            \\display:inline;
-            \\margin:0;
+            \\  height:1em;
+            \\  display:inline;
+            \\  margin:0;
             \\}
             \\.love {
-            \\text-decoration:none !important;
-            \\border-bottom:none !important;
-            \\cursor:pointer !important;
+            \\  text-decoration:none !important;
+            \\  border-bottom:none !important;
+            \\  cursor:pointer !important;
             \\}
             \\footer > section > nav {
-            \\align-items: center;
-            \\display: flex;
-            \\justify-content: space-between;
+            \\  align-items: center;
+            \\  display: flex;
+            \\  justify-content: space-between;
             \\}
         ;
 
