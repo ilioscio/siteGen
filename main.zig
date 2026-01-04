@@ -840,7 +840,7 @@ const SiteGenerator = struct {
 
             try posts_content.appendSlice(self.allocator, "<li><a href=\"");
             try posts_content.appendSlice(self.allocator, link_path);
-            try posts_content.appendiSlice(self.allocator, "\">");
+            try posts_content.appendSlice(self.allocator, "\">");
             try posts_content.appendSlice(self.allocator, post.title);
             try posts_content.appendSlice(self.allocator, "</a></li>\n");
         }
