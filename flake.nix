@@ -74,8 +74,29 @@
       overlays.default = final: prev:
         let
           zig = zig-overlay.packages.${prev.system}."0.15.2";
+          siteGenBin = mkSiteGen final zig;
         in {
-          siteGen = mkSiteGen final zig;
+          siteGen = siteGenBin;
+
+          # The built website
+          ilios-website = final.stdenv.mkDerivation {
+            pname = "ilios-website";
+            version = "0.1.0";
+            src = ./site;
+
+            nativeBuildInputs = [ siteGenBin ];
+
+            buildPhase = ''
+              cp -r $src/* .
+              chmod -R u+w .
+              siteGen .
+            '';
+
+            installPhase = ''
+              mkdir -p $out
+              cp -r * $out/
+            '';
+          };
         };
 
       # ============================================================
@@ -90,9 +111,37 @@
             overlays = [ zig-overlay.overlays.default ];
           };
           zig = pkgs.zigpkgs."0.15.2";
+          siteGenBin = mkSiteGen pkgs zig;
         in {
-          default = mkSiteGen pkgs zig;
-          siteGen = mkSiteGen pkgs zig;
+          default = siteGenBin;
+          siteGen = siteGenBin;
+
+          # The built website - runs siteGen on the site/ directory
+          website = pkgs.stdenv.mkDerivation {
+            pname = "ilios-website";
+            version = "0.1.0";
+            src = ./site;
+
+            nativeBuildInputs = [ siteGenBin ];
+
+            buildPhase = ''
+              # Copy source to writable directory
+              cp -r $src/* .
+              chmod -R u+w .
+              
+              # Run siteGen to generate HTML from markdown
+              siteGen .
+            '';
+
+            installPhase = ''
+              mkdir -p $out
+              cp -r * $out/
+            '';
+
+            meta = with pkgs.lib; {
+              description = "ilios.dev website - built with siteGen";
+            };
+          };
         }
       );
 
