@@ -735,7 +735,7 @@ const SiteGenerator = struct {
         for (self.posts.items) |post| {
             const link_path = try std.fmt.allocPrint(
                 self.allocator,
-                "{s}/{s}.html",
+                "{s}{s}.html",
                 .{
                     post.directory,
                     post.filename[0 .. post.filename.len - 3],
@@ -843,7 +843,7 @@ const SiteGenerator = struct {
         for (self.posts.items) |post| {
             const link_path = try std.fmt.allocPrint(
                 self.allocator,
-                "{s}/{s}.html",
+                "{s}{s}.html",
                 .{
                     post.directory,
                     post.filename[0 .. post.filename.len - 3],
@@ -883,7 +883,7 @@ const SiteGenerator = struct {
             const post = self.posts.items[self.posts.items.len - 1 - i];
             const link_path = try std.fmt.allocPrint(
                 self.allocator,
-                "{s}/{s}.html",
+                "{s}{s}.html",
                 .{
                     post.directory,
                     post.filename[0 .. post.filename.len - 3],
